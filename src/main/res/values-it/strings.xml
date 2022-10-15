@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">App Segnalazioni</string>
+    <string name="equipments_list">Lista Attrezzature</string>
+    <string name="equipments_list_description">Mostra la lista delle attrezzature nel tuo range</string>
+    <string name="qr_code_description">Scannerizza il QR Code per far partire la segnalazione</string>
+    <string name="nfc_tag_description">Attiva il tag NFC per far partire la segnalazione</string>
+    <string name="invalid_gps_permission">Permesso GPS negato: la lista delle attrezzature non sarà filtrata in base alla posizione</string>
+    <string name="gps_turned_off">GPS Spento: la lista delle attrezzature non sarà filtrata in base alla posizione</string>
+    <string name="distance">Distanza</string>
+</resources>

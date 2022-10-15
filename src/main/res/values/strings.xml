@@ -1,0 +1,27 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">Report App</string>
+
+    <!-- Home -->
+    <string name="title_activity_home" translatable="false">HomeActivity</string>
+    <string name="equipments_list_description">Show the equipments in your range</string>
+    <string name="qr_code" translatable="false">QR Code</string>
+    <string name="qr_code_description">Scan the QR Code to start a report</string>
+    <string name="nfc_tag" translatable="false">NFC Tag</string>
+    <string name="nfc_tag_description">Activate the NFC tag to start a report</string>
+
+
+    <!--Report -->
+    <string name="title_activity_report" translatable="false">Report</string>
+
+    <!-- Equipment List -->
+    <string name="equipments_list">Equipments List</string>
+    <string name="invalid_gps_permission">GPS Permissions Denied: the equipment list will not be filtered location based</string>
+    <string name="gps_turned_off">GPS Turned Off: the equipment list will not be filtered location based</string>
+    <string name="distance">Distance</string>
+
+
+    <!-- QRCode -->
+    <string name="title_activity_qrcode_scanner" translatable="false">QRCodeScanner</string>
+
+</resources>
