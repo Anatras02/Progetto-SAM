@@ -1,7 +1,6 @@
 package it.unipi.sam.abalderi
 
 import android.content.Context
-import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
@@ -9,36 +8,31 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.location.FusedLocationProviderClient
+import androidx.compose.ui.semantics.SemanticsProperties.Text
+import androidx.compose.ui.text.input.KeyboardType.Companion.Text
 import com.google.android.gms.location.LocationServices
 import it.unipi.sam.abalderi.components.equipments_list_activity.EquipmentCard
 import it.unipi.sam.abalderi.components.equipments_list_activity.Filter
 import it.unipi.sam.abalderi.components.general.MainStructure
-import it.unipi.sam.abalderi.network.Equipment
-import it.unipi.sam.abalderi.network.EquipmentsApi
-import kotlinx.coroutines.*
-import retrofit2.HttpException
+import it.unipi.sam.abalderi.view_models.EquipmentsListViewModel
+import androidx.compose.material.Text
 
 class EquipmentsListActivity : ComponentActivity() {
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val equipments = MutableLiveData<List<Equipment>>()
-    private lateinit var mCoroutineScope: CoroutineScope //https://medium.com/@pramahalqavi/several-types-of-kotlin-coroutine-scope-difference-coroutinescope-globalscope-etc-9f086cd40173
+    private val equipmentsListViewModel: EquipmentsListViewModel by viewModels()
 
     /**
      * GPS and Coordinates
@@ -83,11 +77,12 @@ class EquipmentsListActivity : ComponentActivity() {
 
 
         if (isLocationEnabled()) {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-            fusedLocationClient.lastLocation.addOnCompleteListener(this) {
-                val location = it.result
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-                setEquipments(location)
+            fusedLocationClient.lastLocation.addOnCompleteListener(this) {
+                equipmentsListViewModel.filterEquipmentsByLocation(
+                    it.result
+                )
             }
         } else {
             val toast = Toast.makeText(
@@ -96,62 +91,6 @@ class EquipmentsListActivity : ComponentActivity() {
                 Toast.LENGTH_LONG
             )
             toast.show()
-
-            setEquipments(null)
-        }
-    }
-
-    /**
-     * Equipments
-     */
-    private fun setEquipments(userLocation: Location?) {
-        fun getLocationFromCoordinates(latitude: Double, longitude: Double): Location {
-            val location = Location("")
-            location.latitude = latitude
-            location.longitude = longitude
-
-            return location
-        }
-
-        fun filterEquipments(equipments: List<Equipment>): List<Equipment> {
-            if (userLocation != null) {
-                return equipments.filter { equipment ->
-                    return@filter userLocation.distanceTo(
-                        getLocationFromCoordinates(
-                            equipment.latitude,
-                            equipment.longitude
-                        )
-                    ) < 500
-                }
-            }
-
-            return equipments
-        }
-
-        mCoroutineScope = CoroutineScope(Dispatchers.Main)
-        mCoroutineScope.launch {
-            try {
-                val results = EquipmentsApi.retrofitService.getEquipments()
-
-                val filteredEquipments = filterEquipments(results)
-
-                if (userLocation != null) {
-                    filteredEquipments.forEach { equipment ->
-                        equipment.distance = userLocation.distanceTo(
-                            getLocationFromCoordinates(
-                                equipment.latitude,
-                                equipment.longitude
-                            )
-                        )
-                    }
-                }
-
-                equipments.postValue(filteredEquipments)
-
-
-            } catch (e: HttpException) {
-                // TODO: Mostrare servizio temporaneamente non disponibile
-            }
         }
     }
 
@@ -162,20 +101,30 @@ class EquipmentsListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         setContent {
-            val equipments: List<Equipment> by this.equipments.observeAsState(listOf())
+            val equipments by equipmentsListViewModel.equipments.collectAsState(listOf())
+            Log.v("equipments", equipments.toString())
 
             MainStructure(topBarText = stringResource(R.string.equipments_list)) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_space_between)),
-                    modifier = Modifier
-                        .padding(dimensionResource(R.dimen.fab_margin))
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    Filter("Filtra attrezzature")
-                    equipments.forEach { equipment ->
-                        EquipmentCard(equipment.id, equipment.name, equipment.distance)
+                if (equipments !== null) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_space_between)),
+                        modifier = Modifier
+                            .padding(dimensionResource(R.dimen.fab_margin))
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Filter(stringResource(R.string.filter_equipments), equipmentsListViewModel)
+                        equipments?.forEach { equipment ->
+                            EquipmentCard(equipment.id, equipment.name, equipment.distance)
+                        }
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
                     }
                 }
             }
@@ -186,14 +135,6 @@ class EquipmentsListActivity : ComponentActivity() {
         handleGPSPermissions()
 
         super.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        if (::mCoroutineScope.isInitialized && mCoroutineScope.isActive) {
-            mCoroutineScope.cancel()
-        }
     }
 }
 

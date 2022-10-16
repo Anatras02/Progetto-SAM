@@ -6,25 +6,25 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.SocialDistance
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.unipi.sam.abalderi.R
+import it.unipi.sam.abalderi.view_models.EquipmentsListViewModel
 
 @Composable
-fun Filter(label: String) {
-    var text by remember { mutableStateOf("") }
+fun Filter(label: String, viewModel: EquipmentsListViewModel) {
+    val text by viewModel.filterText.observeAsState()
 
     OutlinedTextField(
-        value = text,
-        onValueChange = {
-            viewModelScope.launch {
-                for (i in 1..1000000) Log.v("log", i.toString())
-            }
-
-
-            text = it
-        },
+        modifier = Modifier
+            .fillMaxWidth()
+        ,
+        value = text ?: "",
+        onValueChange = { viewModel.onFilterTextChange(it) },
         label = { Text(label) },
     )
 }

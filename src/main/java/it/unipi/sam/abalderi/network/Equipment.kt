@@ -1,5 +1,7 @@
 package it.unipi.sam.abalderi.network
 
+import android.util.Log
+
 
 data class Equipment(
     val id: Int,
@@ -7,5 +9,11 @@ data class Equipment(
     val description: String,
     val latitude: Double,
     val longitude: Double,
-    var distance: Float? = null
-)
+    var distance: Float? = null,
+    var locationVisible: Boolean = true,
+    var textVisibile: Boolean = true
+) {
+    fun isVisible(): Boolean {
+        return locationVisible && textVisibile
+    }
+}

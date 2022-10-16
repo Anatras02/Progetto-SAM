@@ -19,6 +19,7 @@
     <string name="invalid_gps_permission">GPS Permissions Denied: the equipment list will not be filtered location based</string>
     <string name="gps_turned_off">GPS Turned Off: the equipment list will not be filtered location based</string>
     <string name="distance">Distance</string>
+    <string name="filter_equipments">Filter equipments</string>
 
 
     <!-- QRCode -->

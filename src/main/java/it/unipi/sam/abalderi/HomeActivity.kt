@@ -10,6 +10,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 
 import androidx.compose.ui.Alignment
@@ -34,6 +36,7 @@ class HomeActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_space_between)),
                     modifier = Modifier
                         .padding(dimensionResource(R.dimen.fab_margin))
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Image(
                         painterResource(R.drawable.playground),
@@ -46,17 +49,17 @@ class HomeActivity : ComponentActivity() {
                         stringResource(R.string.equipments_list),
                         stringResource(id = R.string.equipments_list_description),
                         Intent(this@HomeActivity, EquipmentsListActivity::class.java)
-                    );
+                    )
                     OptionCard(
                         stringResource(R.string.qr_code),
                         stringResource(R.string.qr_code_description),
                         Intent(this@HomeActivity, EquipmentsListActivity::class.java)
-                    );
+                    )
                     OptionCard(
                         stringResource(R.string.nfc_tag),
                         stringResource(R.string.nfc_tag_description),
                         Intent(this@HomeActivity, EquipmentsListActivity::class.java)
-                    );
+                    )
                 }
             }
         }
