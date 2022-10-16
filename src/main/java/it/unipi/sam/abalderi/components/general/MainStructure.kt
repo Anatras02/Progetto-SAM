@@ -10,6 +10,7 @@ import it.unipi.sam.abalderi.ui.theme.AppAndroidTheme
 fun MainStructure(
     topBarText: String,
     modifier: Modifier = Modifier,
+    floatingActionButton : @Composable () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     AppAndroidTheme {
@@ -24,7 +25,9 @@ fun MainStructure(
                     }
                 }
             ) {
-                Surface(modifier = modifier, content = content)
+                Scaffold(floatingActionButton = floatingActionButton) {
+                    Surface(modifier = modifier, content = content)
+                }
             }
         }
     }

@@ -13,6 +13,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.PlusOne
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -98,7 +105,16 @@ class EquipmentsListActivity : ComponentActivity() {
             val equipments by equipmentsListViewModel.equipments.collectAsState(listOf())
             Log.v("equipments", equipments.toString())
 
-            MainStructure(topBarText = stringResource(R.string.equipments_list)) {
+            MainStructure(
+                topBarText = stringResource(R.string.equipments_list),
+                floatingActionButton = {
+                    FloatingActionButton(onClick = {
+                        //TODO: Aggiungere redirect ad Activity per aggiungere attrezzatura
+                    }) {
+                        Icon(Icons.Filled.Add, "")
+                    }
+                }
+            ) {
                 if (equipments !== null) {
                     FilterLayout(
                         viewModel = equipmentsListViewModel,
@@ -111,6 +127,7 @@ class EquipmentsListActivity : ComponentActivity() {
                             EquipmentCard(equipment.id, equipment.name, equipment.distance)
                         }
                     }
+
                 } else {
                     Column(
                         modifier = Modifier.fillMaxSize(),
