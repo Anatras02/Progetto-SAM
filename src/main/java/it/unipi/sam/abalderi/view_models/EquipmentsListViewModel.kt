@@ -1,7 +1,6 @@
 package it.unipi.sam.abalderi.view_models
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,7 +15,7 @@ import retrofit2.HttpException
 class EquipmentsListViewModel : ViewModel() {
     private val _equipments = MutableStateFlow<List<Equipment>?>(null)
     private val _shownEquipments = MutableStateFlow<List<Equipment>?>(null)
-    val equipments = _shownEquipments
+    val equipments: StateFlow<List<Equipment>?> = _shownEquipments
 
     private val _filterText = MutableLiveData<String>()
     val filterText: LiveData<String> = _filterText
@@ -30,9 +29,7 @@ class EquipmentsListViewModel : ViewModel() {
      * Equipments
      */
     private fun setShownEquipments(equipments: List<Equipment>?) {
-        viewModelScope.launch {
-            _shownEquipments.value = equipments?.filter { it.isVisible() }
-        }
+        _shownEquipments.update { equipments?.filter { it.isVisible() } }
     }
 
     private fun getEquipments() {
@@ -46,11 +43,10 @@ class EquipmentsListViewModel : ViewModel() {
             }
 
             _equipments.emit(apiEquipments)
-            _shownEquipments.emit(apiEquipments)
         }
     }
 
-    fun filterEquipmentsByLocation(userLocation: Location?) {
+    fun filterEquipmentsByLocationAndSetDistance(userLocation: Location?) {
         fun getLocationFromCoordinates(latitude: Double, longitude: Double): Location {
             val location = Location("")
             location.latitude = latitude
@@ -68,8 +64,12 @@ class EquipmentsListViewModel : ViewModel() {
 
                     _equipments.value?.forEach { equipment ->
                         val equipmentLocation =
-                            getLocationFromCoordinates(equipment.latitude, equipment.longitude);
-                        equipment.locationVisible = userLocation.distanceTo(equipmentLocation) < 500
+                            getLocationFromCoordinates(equipment.latitude, equipment.longitude)
+
+                        val distance = userLocation.distanceTo(equipmentLocation)
+
+                        equipment.distance = distance
+                        equipment.locationVisible = distance < 500
                     }
 
                     setShownEquipments(_equipments.value)
@@ -79,15 +79,12 @@ class EquipmentsListViewModel : ViewModel() {
     }
 
     private fun filterEquipmentsByName(name: String) {
-        viewModelScope.launch {
-
-            _equipments.value?.forEach { equipment ->
-                equipment.textVisibile = equipment.name.lowercase().startsWith(name.lowercase())
-            }
-
-            setShownEquipments(_equipments.value)
-
+        _equipments.value?.forEach { equipment ->
+            equipment.textVisibile = equipment.name.lowercase().startsWith(name.lowercase())
         }
+
+        setShownEquipments(_equipments.value)
+
     }
 
     /**

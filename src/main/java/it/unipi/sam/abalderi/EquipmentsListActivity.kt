@@ -9,27 +9,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.SemanticsProperties.Text
-import androidx.compose.ui.text.input.KeyboardType.Companion.Text
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.location.LocationServices
 import it.unipi.sam.abalderi.components.equipments_list_activity.EquipmentCard
-import it.unipi.sam.abalderi.components.equipments_list_activity.Filter
+import it.unipi.sam.abalderi.components.equipments_list_activity.FilterLayout
 import it.unipi.sam.abalderi.components.general.MainStructure
 import it.unipi.sam.abalderi.view_models.EquipmentsListViewModel
-import androidx.compose.material.Text
 
 class EquipmentsListActivity : ComponentActivity() {
     private val equipmentsListViewModel: EquipmentsListViewModel by viewModels()
@@ -80,9 +75,7 @@ class EquipmentsListActivity : ComponentActivity() {
             val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
             fusedLocationClient.lastLocation.addOnCompleteListener(this) {
-                equipmentsListViewModel.filterEquipmentsByLocation(
-                    it.result
-                )
+                equipmentsListViewModel.filterEquipmentsByLocationAndSetDistance(it.result)
             }
         } else {
             val toast = Toast.makeText(
@@ -107,14 +100,14 @@ class EquipmentsListActivity : ComponentActivity() {
 
             MainStructure(topBarText = stringResource(R.string.equipments_list)) {
                 if (equipments !== null) {
-                    Column(
+                    FilterLayout(
+                        viewModel = equipmentsListViewModel,
                         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_space_between)),
                         modifier = Modifier
-                            .padding(dimensionResource(R.dimen.fab_margin))
                             .verticalScroll(rememberScrollState())
                     ) {
-                        Filter(stringResource(R.string.filter_equipments), equipmentsListViewModel)
                         equipments?.forEach { equipment ->
+                            Log.v("equipment", equipment.name)
                             EquipmentCard(equipment.id, equipment.name, equipment.distance)
                         }
                     }

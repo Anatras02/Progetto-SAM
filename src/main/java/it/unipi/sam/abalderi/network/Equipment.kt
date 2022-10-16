@@ -1,7 +1,5 @@
 package it.unipi.sam.abalderi.network
 
-import android.util.Log
-
 
 data class Equipment(
     val id: Int,
