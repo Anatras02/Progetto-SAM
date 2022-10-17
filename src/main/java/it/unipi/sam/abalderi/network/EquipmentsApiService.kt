@@ -5,6 +5,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 private const val BASE_URL = "https://backend-app-sam-vvyhv.ondigitalocean.app"
 
@@ -23,6 +24,9 @@ private val retrofit = Retrofit.Builder()
 interface EquipmentsApiService {
     @GET("equipments")
     suspend fun getEquipments(): List<Equipment>
+
+    @GET("equipments/{id}")
+    suspend fun getEquipment(@Path("id") id: Int): Equipment
 }
 
 object EquipmentsApi {

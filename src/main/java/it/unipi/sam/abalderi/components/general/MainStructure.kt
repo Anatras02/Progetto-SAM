@@ -26,7 +26,7 @@ fun MainStructure(
                 }
             ) {
                 Scaffold(floatingActionButton = floatingActionButton) {
-                    Surface(modifier = modifier, content = content)
+                    Surface(modifier = modifier.fillMaxSize(), content = content)
                 }
             }
         }

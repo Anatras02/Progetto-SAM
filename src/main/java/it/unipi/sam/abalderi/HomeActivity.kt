@@ -30,7 +30,7 @@ class HomeActivity : ComponentActivity() {
 
         setContent {
             MainStructure(
-                topBarText = stringResource(R.string.title_activity_report)
+                topBarText = stringResource(R.string.title_activity_report),
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_space_between)),

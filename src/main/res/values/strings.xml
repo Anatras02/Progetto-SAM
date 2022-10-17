@@ -26,6 +26,6 @@
     <string name="title_activity_qrcode_scanner" translatable="false">QRCodeScanner</string>
 
     <!-- Single Equipment -->
-    <string name="title_activity_single_equipment" translatable="false">SingleEquipmentActivity</string>
+    <string name="title_activity_single_equipment">Single Equipment</string>
 
 </resources>

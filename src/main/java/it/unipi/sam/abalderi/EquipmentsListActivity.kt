@@ -3,7 +3,6 @@ package it.unipi.sam.abalderi
 import android.content.Context
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,24 +11,19 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.PlusOne
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.google.android.gms.location.LocationServices
 import it.unipi.sam.abalderi.components.equipments_list_activity.EquipmentCard
 import it.unipi.sam.abalderi.components.equipments_list_activity.FilterLayout
+import it.unipi.sam.abalderi.components.general.CenteredCircularProgressIndicator
 import it.unipi.sam.abalderi.components.general.MainStructure
 import it.unipi.sam.abalderi.view_models.EquipmentsListViewModel
 
@@ -103,7 +97,6 @@ class EquipmentsListActivity : ComponentActivity() {
 
         setContent {
             val equipments by equipmentsListViewModel.equipments.collectAsState(listOf())
-            Log.v("equipments", equipments.toString())
 
             MainStructure(
                 topBarText = stringResource(R.string.equipments_list),
@@ -123,19 +116,12 @@ class EquipmentsListActivity : ComponentActivity() {
                             .verticalScroll(rememberScrollState())
                     ) {
                         equipments?.forEach { equipment ->
-                            Log.v("equipment", equipment.name)
                             EquipmentCard(equipment.id, equipment.name, equipment.distance)
                         }
                     }
 
                 } else {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                    CenteredCircularProgressIndicator()
                 }
             }
         }
